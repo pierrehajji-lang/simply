@@ -4,7 +4,7 @@ Un espace de travail libre et gratuit, façon carnet numérique : pages, bases d
 
 ## L'utiliser tout de suite
 
-Ouvrez la version en ligne : **[lien GitHub Pages à venir]**
+Ouvrez la version en ligne : **https://pierrehajji-lang.github.io/simply/**
 
 - Rien à installer, pas de compte à créer.
 - Vos pages sont enregistrées **dans votre navigateur**, sur votre appareil : personne d'autre ne les voit. Pensez à faire des sauvegardes (Réglages › Télécharger une sauvegarde).
