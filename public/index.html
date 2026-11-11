@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simply</title>
+  <link rel="icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside id="side">
+    <div class="brand"><img src="icon.svg" alt=""> <span>Simply</span><button id="btn-collapse" title="Masquer la barre latérale (⌘\)" data-ico="left"></button><button id="btn-compose" title="Nouvelle page" data-ico="compose"></button></div>
+    <button class="side-btn" id="btn-search" data-ico="search"><span class="lbl">Rechercher</span> <kbd>⌘K</kbd></button>
+    <button class="side-btn" id="btn-ai" data-ico="sparkle"><span class="lbl">Assistant IA</span> <kbd>⌘J</kbd></button>
+    <button class="side-btn" id="btn-tpl" data-ico="grid"><span class="lbl">Modèles</span></button>
+    <button class="side-btn" id="btn-settings" data-ico="gear"><span class="lbl">Réglages et import</span></button>
+    <div class="side-sec" id="fav-sec" hidden><span>Favoris</span></div>
+    <nav id="favs"></nav>
+    <div class="side-sec"><span>Pages</span><button id="btn-new" title="Nouvelle page ou base" data-ico="plus"></button></div>
+    <nav id="tree"></nav>
+    <button class="side-btn" id="btn-new2" data-ico="plus"><span class="lbl">Nouvelle page</span></button>
+    <div class="side-foot">
+      <button class="side-btn" id="btn-trash" data-ico="trash"><span class="lbl">Corbeille</span></button>
+      <button class="side-btn" id="btn-theme"><span class="lbl"></span></button>
+      <div id="status"></div>
+    </div>
+  </aside>
+  <button id="btn-expand" title="Afficher la barre latérale (⌘\)" data-ico="right" hidden></button>
+  <main id="main"></main>
+  <script src="static.js"></script>
+  <script src="core.js"></script>
+  <script src="icons.js"></script>
+  <script src="editor.js"></script>
+  <script src="diagram.js"></script>
+  <script src="db.js"></script>
+  <script src="ai.js"></script>
+  <script src="accounts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "simply",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Espace de travail local : pages, bases de données, modèles et schémas",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0"
+  }
+}

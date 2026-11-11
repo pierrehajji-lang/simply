@@ -1,0 +1,9 @@
+# Données personnelles : jamais publiées
+donnees/
+import/
+# Programmes téléchargés / installés localement
+node_modules/
+outils/
+# Divers
+.DS_Store
+*.log
