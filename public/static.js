@@ -84,6 +84,16 @@
     if (path === '/api/accounts') return json(u ? [{ id: u.id, name: nameOf(u), admin: false }] : []);
     if (path === '/api/logout') { await s.auth.signOut(); return json({ ok: true }); }
     if (!u) return json({ error: 'Connexion requise' }, 401);
+    // Imports préparés pour ce compte (ex. export Notion déposé par l'administrateur dans la table imports_en_attente).
+    if (path === '/api/imports') {
+      const { data, error } = await s.from('imports_en_attente').select('id,data').eq('user_id', u.id).order('id');
+      return json(error ? [] : data);
+    }
+    if (path === '/api/imports/done') {
+      const ids = b().ids || [];
+      if (ids.length) await s.from('imports_en_attente').delete().in('id', ids);
+      return json({ ok: true });
+    }
     if (path === '/api/password') {
       const { old, password } = b();
       if (String(password || '').length < 8) return json({ error: 'Le nouveau code doit faire au moins 8 caractères.' }, 400);

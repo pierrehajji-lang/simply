@@ -1148,6 +1148,17 @@ async function boot() {
   const m = location.hash.match(/^#\/(page|fiche)\/(\w+)/);
   if (m && m[1] === 'fiche' && findRow(m[2])) { nav = { page: findRow(m[2]).host.id, row: m[2] }; history.replaceState(nav, ''); renderAll(); }
   else { const id = m && page(m[2]) ? m[2] : S.lastPage; openPage(id); history.replaceState(nav, '', '#/page/' + nav.page); }
+  if (window.SIMPLY_CLOUD_ON) applyPendingImports();
+}
+// Comptes en ligne : un contenu préparé pour ce compte (ex. son Notion) est ajouté une seule fois, puis retiré de la file.
+async function applyPendingImports() {
+  let list; try { list = await (await fetch('/api/imports')).json(); } catch { return; }
+  if (!Array.isArray(list) || !list.length) return;
+  for (const it of list) try { importNotion(JSON.parse(it.data)); } catch { toast('Un import n’a pas pu être lu.'); }
+  flush(); await saving;
+  if ($('#status')?.classList.contains('err')) return; // pas enregistré : on garde l'import pour la prochaine fois
+  await fetch('/api/imports/done', { method: 'POST', body: JSON.stringify({ ids: list.map(x => x.id) }) });
+  toast('Votre contenu Notion a été ajouté (page « Import Notion »)');
 }
 
 $$('[data-ico]').forEach(el => el.prepend(ico(el.dataset.ico)));
