@@ -947,7 +947,8 @@ function openSettings() {
   const body = h('div', { class: 'settings' },
     h('div', { class: 'mh' }, 'Apparence'),
     h('div', { class: 'row' }, ['light', 'dark', 'auto'].map(t => h('button', { class: 'btn' + (S.theme === t ? ' primary' : ''), onclick: () => { S.theme = t; applyTheme(); save(); close(); openSettings(); } }, { light: '☀️ Clair', dark: '🌙 Sombre', auto: '🖥 Comme le Mac' }[t]))),
-    window.SIMPLY_STATIC ? [h('div', { class: 'mh' }, 'Vos données'),
+    window.SIMPLY_CLOUD_ON ? [h('div', { class: 'mh' }, 'Mon compte'), accountsSection(() => close())]
+    : window.SIMPLY_STATIC ? [h('div', { class: 'mh' }, 'Vos données'),
       h('p', { class: 'muted small' }, 'Version en ligne : vos pages sont enregistrées dans ce navigateur, sur cet appareil uniquement. Personne d’autre ne les voit. Téléchargez régulièrement une sauvegarde (plus bas) : vider les données du navigateur les effacerait.')]
     : [h('div', { class: 'mh' }, 'Comptes'), accountsSection(() => close()), h('div', { class: 'mh' }, 'Accès depuis le Wi-Fi'), networkSection()],
     h('div', { class: 'mh' }, 'Assistant IA'),

@@ -48,8 +48,8 @@ function showLogin(signup) {
     card.replaceChildren(...[
       h('img', { src: 'icon.svg', alt: '', class: 'acc-logo' }), h('h1', {}, 'Simply'),
       h('p', { class: 'muted' }, mode === 'login' ? 'Connectez-vous à votre espace.' : 'Créez votre espace : il sera vide et rien qu’à vous.'),
-      signup ? h('div', { class: 'acc-tabs' }, [['login', 'Se connecter'], ['signup', 'Créer un compte']].map(([m, l]) => h('button', { class: m === mode ? 'on' : '', onclick: () => { mode = m; draw(); (mode === 'signup' ? inv : id).focus(); } }, l))) : null,
-      mode === 'signup' ? inv : null, id, pw, mode === 'signup' ? pw2 : null, err,
+      signup ? h('div', { class: 'acc-tabs' }, [['login', 'Se connecter'], ['signup', 'Créer un compte']].map(([m, l]) => h('button', { class: m === mode ? 'on' : '', onclick: () => { mode = m; draw(); (mode === 'signup' && !window.SIMPLY_CLOUD_ON ? inv : id).focus(); } }, l))) : null,
+      mode === 'signup' && !window.SIMPLY_CLOUD_ON ? inv : null, id, pw, mode === 'signup' ? pw2 : null, err,
       h('button', { class: 'btn primary wide', onclick: go }, mode === 'login' ? 'Se connecter' : 'Créer mon compte'),
       h('p', { class: 'muted small' }, mode === 'login' ? 'Code oublié ? Demandez à l’administrateur de Simply.' : 'L’e-mail peut être inventé : il sert seulement d’identifiant.')].filter(Boolean));
   };

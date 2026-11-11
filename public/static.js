@@ -8,7 +8,7 @@
   const probe = realFetch('/api/me', { cache: 'no-store' })
     .then(r => r.status !== 404) // un site web simple répond « introuvable » ; un serveur Simply répond (même pour refuser)
     .catch(() => false)
-    .then(server => { window.SIMPLY_STATIC = !server; return !server; });
+    .then(server => { window.SIMPLY_STATIC = !server; window.SIMPLY_CLOUD_ON = !server && !!(window.SIMPLY_CLOUD?.url && window.SIMPLY_CLOUD?.key); return !server; });
 
   // --- Petit coffre dans le navigateur (IndexedDB : bien plus grand que localStorage) ---
   let dbp = null;
@@ -54,6 +54,57 @@
     return j.message?.content || '';
   }
 
+  // --- Comptes en ligne (Supabase) : seulement si cloud-config.js est rempli ---
+  const CL = window.SIMPLY_CLOUD || {};
+  const cloudOn = !!(CL.url && CL.key);
+  let sbp = null;
+  const sb = () => sbp ||= import('https://esm.sh/@supabase/supabase-js@2.118.0').then(m => m.createClient(CL.url, CL.key));
+  // Supabase veut une adresse e-mail : un simple prénom devient « prenom@utilisateurs.simply.app » (adresse fictive).
+  const toEmail = n => { n = String(n || '').trim().toLowerCase(); return n.includes('@') ? n : n.normalize('NFD').replace(/[^a-z0-9._-]/g, '') + '@utilisateurs.simply.app'; };
+  const nameOf = u => u.user_metadata?.name || u.email.replace('@utilisateurs.simply.app', '');
+  async function cloud(path, method, body) {
+    const s = await sb();
+    const { data: { session } } = await s.auth.getSession();
+    const u = session?.user;
+    const b = () => { try { return JSON.parse(body || '{}'); } catch { return {}; } };
+    if (path === '/api/me') return json({ accounts: true, user: u ? { id: u.id, name: nameOf(u), admin: false } : null, signup: true, minPw: 8, cloud: true });
+    if (path === '/api/login') {
+      const { error } = await s.auth.signInWithPassword({ email: toEmail(b().name), password: String(b().password || '') });
+      return error ? json({ error: /rate|many/i.test(error.message) ? 'Trop d’essais : réessayez dans quelques minutes.' : 'Identifiant ou code incorrect.' }, 401) : json({ ok: true });
+    }
+    if (path === '/api/accounts' && method === 'POST') {
+      const { name, password } = b();
+      if (!String(name || '').trim()) return json({ error: 'Choisissez un identifiant (e-mail ou prénom).' }, 400);
+      if (String(password || '').length < 8) return json({ error: 'Le code doit faire au moins 8 caractères.' }, 400);
+      const { data, error } = await s.auth.signUp({ email: toEmail(name), password, options: { data: { name: String(name).trim() } } });
+      if (error) return json({ error: /registered|exists/i.test(error.message) ? 'Cet identifiant est déjà pris.' : /invalid/i.test(error.message) ? 'Identifiant non accepté : essayez une adresse e-mail.' : 'Inscription impossible : ' + error.message }, 400);
+      if (!data.session) return json({ error: 'Compte créé : confirmez-le avec le lien reçu par e-mail, puis connectez-vous.' }, 400);
+      return json({ ok: true });
+    }
+    if (path === '/api/accounts') return json(u ? [{ id: u.id, name: nameOf(u), admin: false }] : []);
+    if (path === '/api/logout') { await s.auth.signOut(); return json({ ok: true }); }
+    if (!u) return json({ error: 'Connexion requise' }, 401);
+    if (path === '/api/password') {
+      const { old, password } = b();
+      if (String(password || '').length < 8) return json({ error: 'Le nouveau code doit faire au moins 8 caractères.' }, 400);
+      if ((await s.auth.signInWithPassword({ email: u.email, password: String(old || '') })).error) return json({ error: 'Code actuel incorrect.' }, 400);
+      const { error } = await s.auth.updateUser({ password });
+      return error ? json({ error: error.message }, 400) : json({ ok: true });
+    }
+    if (path === '/api/data') {
+      // Une ligne par compte dans la table « espaces » ; les règles de la base empêchent de lire celle des autres.
+      if (method === 'GET') {
+        const { data, error } = await s.from('espaces').select('data').eq('user_id', u.id).maybeSingle();
+        if (error) return json({ error: error.message }, 500);
+        return new Response(data?.data ?? 'null', { headers: { 'Content-Type': 'application/json' } });
+      }
+      try { if (!Array.isArray(JSON.parse(body).pages)) throw 0; } catch { return json({ error: 'Données invalides' }, 400); }
+      const { error } = await s.from('espaces').upsert({ user_id: u.id, data: body, updated_at: new Date().toISOString() });
+      return error ? json({ error: error.message }, 500) : new Response(null, { status: 204 });
+    }
+    return null; // le reste (images, IA…) fonctionne comme sans comptes
+  }
+
   async function local(path, method, body) {
     if (path === '/api/me') return json({ accounts: false, user: null, static: true });
     if (path === '/api/network') return json({ static: true });
@@ -95,6 +146,8 @@
   window.fetch = async (input, opts = {}) => {
     const url = typeof input === 'string' ? input : input.url;
     if (!url.startsWith('/api/') || !(await probe)) return realFetch(input, opts);
-    return local(url.split('?')[0], (opts.method || 'GET').toUpperCase(), opts.body);
+    const path = url.split('?')[0], method = (opts.method || 'GET').toUpperCase();
+    if (cloudOn) { const r = await cloud(path, method, opts.body); if (r) return r; }
+    return local(path, method, opts.body);
   };
 })();

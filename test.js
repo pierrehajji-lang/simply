@@ -35,7 +35,7 @@ setTimeout(async () => {
     assert.strictEqual((await fetch(base + '/%2e%2e/server.js')).status, 404);
     assert.strictEqual((await fetch(base + '/fichiers/..%2Fespace.json')).status, 404);
     assert.strictEqual((await fetch(base + '/')).status, 200);
-    for (const f of ['static.js', 'core.js', 'editor.js', 'diagram.js', 'db.js', 'ai.js', 'accounts.js', 'icons.js', 'app.js', 'style.css']) assert.strictEqual((await fetch(base + '/' + f)).status, 200, f);
+    for (const f of ['cloud-config.js', 'static.js', 'core.js', 'editor.js', 'diagram.js', 'db.js', 'ai.js', 'accounts.js', 'icons.js', 'app.js', 'style.css']) assert.strictEqual((await fetch(base + '/' + f)).status, 200, f);
     // Comptes : sans compte tout est ouvert ; après le premier compte, il faut se connecter et chacun a son espace.
     assert.deepStrictEqual((await (await fetch(base + '/api/me')).json()).accounts, false);
     // Via le tunnel Internet (en-tête de relais) : refusé tant qu'il n'y a pas de comptes, même si la demande vient de 127.0.0.1.
