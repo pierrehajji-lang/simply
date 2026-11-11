@@ -51,7 +51,7 @@ function showLogin(signup) {
       signup ? h('div', { class: 'acc-tabs' }, [['login', 'Se connecter'], ['signup', 'Créer un compte']].map(([m, l]) => h('button', { class: m === mode ? 'on' : '', onclick: () => { mode = m; draw(); (mode === 'signup' && !window.SIMPLY_CLOUD_ON ? inv : id).focus(); } }, l))) : null,
       mode === 'signup' && !window.SIMPLY_CLOUD_ON ? inv : null, id, pw, mode === 'signup' ? pw2 : null, err,
       h('button', { class: 'btn primary wide', onclick: go }, mode === 'login' ? 'Se connecter' : 'Créer mon compte'),
-      h('p', { class: 'muted small' }, mode === 'login' ? 'Code oublié ? Demandez à l’administrateur de Simply.' : 'L’e-mail peut être inventé : il sert seulement d’identifiant.')].filter(Boolean));
+      h('p', { class: 'muted small' }, mode === 'login' ? (window.SIMPLY_CLOUD_ON ? 'Pas encore de compte ? Cliquez sur « Créer un compte ».' : 'Code oublié ? Demandez à l’administrateur de Simply.') : 'L’e-mail peut être inventé : il sert seulement d’identifiant.')].filter(Boolean));
   };
   draw();
   document.body.replaceChildren(h('div', { class: 'acc-screen' }, card));
