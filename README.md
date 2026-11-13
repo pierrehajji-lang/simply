@@ -1,4 +1,4 @@
-# Simply
+# Zoubiders
 
 Un espace de travail libre et gratuit, façon carnet numérique : pages, bases de données (tableau, Kanban, calendrier, galerie, graphique, chronologie), modèles prêts à l'emploi (dont une collection « Recherche d'emploi »), schémas et assistant IA.
 
@@ -19,12 +19,12 @@ npm install
 node server.js
 ```
 
-Simply s'ouvre sur http://localhost:3210. Vos données sont rangées dans le dossier `donnees/`. Sur Mac, vous pouvez aussi double-cliquer sur `Lancer Simply.command`.
+Zoubiders s'ouvre sur http://localhost:3210. Vos données sont rangées dans le dossier `donnees/`. Sur Mac, vous pouvez aussi double-cliquer sur `Lancer Zoubiders.command`.
 
-Cette version installée ajoute : comptes avec un espace séparé par personne, accès depuis le Wi-Fi, partage par Internet (`Ouvrir Simply sur Internet.command`, qui utilise [cloudflared](https://github.com/cloudflare/cloudflared) à placer dans `outils/`). Le mode d'emploi complet est dans [LISEZMOI.md](LISEZMOI.md).
+Cette version installée ajoute : comptes avec un espace séparé par personne, accès depuis le Wi-Fi, partage par Internet (`Ouvrir Zoubiders sur Internet.command`, qui utilise [cloudflared](https://github.com/cloudflare/cloudflared) à placer dans `outils/`). Le mode d'emploi complet est dans [LISEZMOI.md](LISEZMOI.md).
 
 ## Contribuer
 
 Le code est volontairement simple : HTML, CSS et JavaScript sans framework (`public/`), plus un petit serveur Node (`server.js`). Vérification : `node test.js`.
 
-Icônes : [Lucide](https://lucide.dev) (licence ISC). Licence de Simply : [MIT](LICENSE).
+Icônes : [Lucide](https://lucide.dev) (licence ISC). Licence de Zoubiders : [MIT](LICENSE).

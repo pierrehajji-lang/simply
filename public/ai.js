@@ -1,10 +1,10 @@
 'use strict';
-/* Simply — assistant IA : discussion, actions sur le texte sélectionné, création de modèles.
+/* Zoubiders — assistant IA : discussion, actions sur le texte sélectionné, création de modèles.
    Le « cerveau » est Claude (Internet + clé API) ou une IA locale Ollama, au choix dans Réglages. */
 
-const AI_SYSTEM = `Tu es l'assistant intégré à Simply, une application de notes et de bases de données (comme un carnet numérique).
+const AI_SYSTEM = `Tu es l'assistant intégré à Zoubiders, une application de notes et de bases de données (comme un carnet numérique).
 Réponds toujours en français, clairement et simplement : l'utilisateur débute en informatique.
-Écris en Markdown simple, que Simply sait afficher : titres (#, ##, ###), listes (- ou 1.), cases à cocher (- [ ]), citations (>), tableaux (| a | b |), séparateurs (---) et encadrés (<callout icon="💡">texte</callout>).`;
+Écris en Markdown simple, que Zoubiders sait afficher : titres (#, ##, ###), listes (- ou 1.), cases à cocher (- [ ]), citations (>), tableaux (| a | b |), séparateurs (---) et encadrés (<callout icon="💡">texte</callout>).`;
 
 async function aiAsk(messages, { system = AI_SYSTEM, effort } = {}) {
   const r = await fetch('/api/ai', { method: 'POST', body: JSON.stringify({ system, messages, effort }) });
@@ -13,7 +13,7 @@ async function aiAsk(messages, { system = AI_SYSTEM, effort } = {}) {
   if (!r.ok) throw new Error(j.error || 'L’assistant ne répond pas.');
   return j.text || '';
 }
-const OLD_SERVER = 'Simply tourne encore avec une ancienne version : fermez la fenêtre Terminal de Simply, puis relancez « Lancer Simply.command ».';
+const OLD_SERVER = 'Zoubiders tourne encore avec une ancienne version : fermez la fenêtre Terminal de Zoubiders, puis relancez « Lancer Zoubiders.command ».';
 const pageMd = d => d ? `# ${d.title || rowTitleOf(d) || 'Sans titre'}\n\n${blocksToMd(d.blocks || [])}` : '';
 function rowTitleOf(d) { const ctx = !S.pages.includes(d) && findRow(d.id); return ctx ? rowTitle(ctx.db, d) : ''; }
 // Affiche une réponse Markdown avec le rendu habituel des pages (lecture seule).
@@ -34,7 +34,7 @@ function drawAi(focus = true) {
     onkeydown: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input.value); } } });
   const send = async text => {
     text = text.trim(); if (!text || aiChat.busy) return;
-    const ctx = aiChat.withPage && currentDoc() ? `Voici la page ouverte dans Simply :\n\n${pageMd(currentDoc())}\n\n---\n\n` : '';
+    const ctx = aiChat.withPage && currentDoc() ? `Voici la page ouverte dans Zoubiders :\n\n${pageMd(currentDoc())}\n\n---\n\n` : '';
     aiChat.msgs.push({ role: 'user', content: text, shown: text, ctx });
     aiChat.busy = true; drawAi();
     try {
@@ -131,7 +131,7 @@ async function aiCreateTemplate() {
   toast('✨ L’assistant prépare votre modèle…');
   let md;
   try {
-    md = await aiAsk([{ role: 'user', content: `Crée un modèle de page Simply pour : ${want}
+    md = await aiAsk([{ role: 'user', content: `Crée un modèle de page Zoubiders pour : ${want}
 Première ligne : « ICONE: » suivi d'un seul emoji. Deuxième ligne : « NOM: » suivi d'un nom court.
 Ensuite la page en Markdown : un encadré d'introduction, des titres, des cases à cocher, des listes et au moins un tableau prérempli avec des exemples utiles.` }], { effort: 'medium' });
   } catch (e) { return toast('⚠️ ' + e.message, { label: 'Réglages IA', fn: openAiSettings }); }
@@ -148,7 +148,7 @@ Ensuite la page en Markdown : un encadré d'introduction, des titres, des cases 
 // ---------- Réglages ----------
 async function openAiSettings() {
   let c;
-  try { const r = await fetch('/api/ai/config'); if (r.status === 404) return toast(OLD_SERVER); c = await r.json(); } catch { return toast('Simply ne répond pas : relancez « Lancer Simply.command ».'); }
+  try { const r = await fetch('/api/ai/config'); if (r.status === 404) return toast(OLD_SERVER); c = await r.json(); } catch { return toast('Zoubiders ne répond pas : relancez « Lancer Zoubiders.command ».'); }
   let provider = c.provider, close;
   const key = h('input', { class: 'mini wide', type: 'password', placeholder: c.hasKey ? '•••••••• (clé enregistrée — laissez vide pour la garder)' : 'sk-ant-…', autocomplete: 'off' });
   const model = h('input', { class: 'mini wide', value: c.ollamaModel });

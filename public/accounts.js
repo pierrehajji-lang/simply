@@ -1,5 +1,5 @@
 'use strict';
-/* Simply — comptes : écran de connexion, création de comptes, changement de mot de passe. */
+/* Zoubiders — comptes : écran de connexion, création de comptes, changement de mot de passe. */
 
 let ME = null; // compte connecté (null en mode « sans compte »)
 const postJson = async (url, body) => {
@@ -46,12 +46,12 @@ function showLogin(signup) {
   const draw = () => {
     pw.autocomplete = mode === 'login' ? 'current-password' : 'new-password';
     card.replaceChildren(...[
-      h('img', { src: 'icon.svg', alt: '', class: 'acc-logo' }), h('h1', {}, 'Simply'),
+      h('img', { src: 'icon.svg', alt: '', class: 'acc-logo' }), h('h1', {}, 'Zoubiders'),
       h('p', { class: 'muted' }, mode === 'login' ? 'Connectez-vous à votre espace.' : 'Créez votre espace : il sera vide et rien qu’à vous.'),
       signup ? h('div', { class: 'acc-tabs' }, [['login', 'Se connecter'], ['signup', 'Créer un compte']].map(([m, l]) => h('button', { class: m === mode ? 'on' : '', onclick: () => { mode = m; draw(); (mode === 'signup' && !window.SIMPLY_CLOUD_ON ? inv : id).focus(); } }, l))) : null,
       mode === 'signup' && !window.SIMPLY_CLOUD_ON ? inv : null, id, pw, mode === 'signup' ? pw2 : null, err,
       h('button', { class: 'btn primary wide', onclick: go }, mode === 'login' ? 'Se connecter' : 'Créer mon compte'),
-      h('p', { class: 'muted small' }, mode === 'login' ? (window.SIMPLY_CLOUD_ON ? 'Pas encore de compte ? Cliquez sur « Créer un compte ».' : 'Code oublié ? Demandez à l’administrateur de Simply.') : 'L’e-mail peut être inventé : il sert seulement d’identifiant.')].filter(Boolean));
+      h('p', { class: 'muted small' }, mode === 'login' ? (window.SIMPLY_CLOUD_ON ? 'Pas encore de compte ? Cliquez sur « Créer un compte ».' : 'Code oublié ? Demandez à l’administrateur de Zoubiders.') : 'L’e-mail peut être inventé : il sert seulement d’identifiant.')].filter(Boolean));
   };
   draw();
   document.body.replaceChildren(h('div', { class: 'acc-screen' }, card));
@@ -69,16 +69,16 @@ function networkSection() {
       const r = await fetch('/api/network', { method: 'PUT', body: JSON.stringify({ wifi }) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) return toast(j.error || 'Erreur');
-      toast(wifi ? 'Simply est ouvert au Wi-Fi' : 'Accès Wi-Fi fermé'); draw();
+      toast(wifi ? 'Zoubiders est ouvert au Wi-Fi' : 'Accès Wi-Fi fermé'); draw();
     };
     setKids(box, 
       n.wifi && n.accounts ? h('div', {},
         h('p', { class: 'small' }, '🟢 Ouvert. Sur un téléphone ou un ordinateur branché au même Wi-Fi, tapez cette adresse dans le navigateur :'),
         n.urls.map(u => h('div', { class: 'row' }, h('code', { class: 'net-url' }, u), h('button', { class: 'btn sm', onclick: () => { navigator.clipboard?.writeText(u); toast('Adresse copiée'); } }, 'Copier'))),
-        h('p', { class: 'muted small' }, 'Le Mac doit rester allumé avec Simply lancé. Chacun se connecte avec son compte. À n’utiliser que sur votre Wi-Fi de confiance (maison, bureau), pas sur un Wi-Fi public.'),
+        h('p', { class: 'muted small' }, 'Le Mac doit rester allumé avec Zoubiders lancé. Chacun se connecte avec son compte. À n’utiliser que sur votre Wi-Fi de confiance (maison, bureau), pas sur un Wi-Fi public.'),
         n.local ? h('button', { class: 'btn sm', onclick: () => set(false) }, 'Fermer l’accès Wi-Fi') : null)
       : h('div', {},
-        h('p', { class: 'muted small' }, '🔒 Fermé : seul ce Mac peut ouvrir Simply.' + (n.accounts ? '' : ' Pour ouvrir, activez d’abord les comptes (ci-dessus), afin que chacun doive se connecter.')),
+        h('p', { class: 'muted small' }, '🔒 Fermé : seul ce Mac peut ouvrir Zoubiders.' + (n.accounts ? '' : ' Pour ouvrir, activez d’abord les comptes (ci-dessus), afin que chacun doive se connecter.')),
         n.accounts && n.local ? h('button', { class: 'btn sm primary', onclick: () => set(true) }, 'Ouvrir au Wi-Fi') : null),
       n.accounts && ME?.admin ? h('label', { class: 'row small acc-signup' }, h('input', { type: 'checkbox', checked: n.signup, onchange: async e => { await fetch('/api/network', { method: 'PUT', body: JSON.stringify({ signup: e.target.checked }) }); toast(e.target.checked ? 'Inscriptions ouvertes' : 'Inscriptions fermées'); } }),
         'Les personnes qui ont l’adresse et le code d’invitation peuvent créer leur propre compte (espace vide et séparé)') : null,
@@ -89,10 +89,10 @@ function networkSection() {
       n.internet ? h('div', {},
         h('p', { class: 'small' }, '🟢 En ligne. Envoyez ce lien et le code d’invitation à qui vous voulez :'),
         h('div', { class: 'row' }, h('code', { class: 'net-url' }, n.internet), h('button', { class: 'btn sm', onclick: () => { navigator.clipboard?.writeText(n.internet); toast('Lien copié'); } }, 'Copier')),
-        h('p', { class: 'muted small' }, 'Le lien marche tant que la fenêtre « Ouvrir Simply sur Internet » reste ouverte et que le Mac est allumé. Il change à chaque ouverture.'))
+        h('p', { class: 'muted small' }, 'Le lien marche tant que la fenêtre « Ouvrir Zoubiders sur Internet » reste ouverte et que le Mac est allumé. Il change à chaque ouverture.'))
       : h('p', { class: 'muted small' }, n.accounts
-        ? '🔒 Hors ligne. Pour partager Simply avec n’importe qui, double-cliquez sur « Ouvrir Simply sur Internet.command » dans le dossier de Simply : le lien s’affichera ici.'
-        : '🔒 Hors ligne. Activez d’abord les comptes (ci-dessus) : Simply refuse toute connexion venant d’Internet sans comptes.'));
+        ? '🔒 Hors ligne. Pour partager Zoubiders avec n’importe qui, double-cliquez sur « Ouvrir Zoubiders sur Internet.command » dans le dossier de Zoubiders : le lien s’affichera ici.'
+        : '🔒 Hors ligne. Activez d’abord les comptes (ci-dessus) : Zoubiders refuse toute connexion venant d’Internet sans comptes.'));
   };
   draw();
   return box;
@@ -104,7 +104,7 @@ function accountsSection(closeSettings) {
   const draw = async () => {
     if (!ME) {
       setKids(box, 
-        h('p', { class: 'muted small' }, 'Simply n’a pas de comptes pour l’instant : tout le monde qui ouvre Simply sur ce Mac voit le même espace.'),
+        h('p', { class: 'muted small' }, 'Zoubiders n’a pas de comptes pour l’instant : tout le monde qui ouvre Zoubiders sur ce Mac voit le même espace.'),
         h('button', { class: 'mi', onclick: async () => {
           const v = await formDialog('Activer les comptes', 'Créez d’abord VOTRE compte (administrateur). Il garde tout le contenu actuel. Ensuite, chaque personne aura son espace séparé.',
             [{ label: 'Votre identifiant (e-mail ou prénom)' }, { label: 'Code (8 caractères minimum)', type: 'password' }, { label: 'Retapez le code', type: 'password' }], 'Créer mon compte');

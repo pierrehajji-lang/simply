@@ -1,12 +1,12 @@
 'use strict';
-/* Simply — mode « site web » (ex. GitHub Pages) : il n'y a pas de serveur Simply derrière.
+/* Zoubiders — mode « site web » (ex. GitHub Pages) : il n'y a pas de serveur Zoubiders derrière.
    On remplace alors les appels /api/… par des équivalents dans le navigateur :
    les pages sont gardées dans ce navigateur (IndexedDB), l'IA est appelée directement avec la clé du visiteur. */
 (() => {
   const realFetch = window.fetch.bind(window);
-  // Y a-t-il un vrai serveur Simply ? (oui en local, sur le Wi-Fi ou via le tunnel ; non sur un simple site web)
+  // Y a-t-il un vrai serveur Zoubiders ? (oui en local, sur le Wi-Fi ou via le tunnel ; non sur un simple site web)
   const probe = realFetch('/api/me', { cache: 'no-store' })
-    .then(r => r.status !== 404) // un site web simple répond « introuvable » ; un serveur Simply répond (même pour refuser)
+    .then(r => r.status !== 404) // un site web simple répond « introuvable » ; un serveur Zoubiders répond (même pour refuser)
     .catch(() => false)
     .then(server => { window.SIMPLY_STATIC = !server; window.SIMPLY_CLOUD_ON = !server && !!(window.SIMPLY_CLOUD?.url && window.SIMPLY_CLOUD?.key); return !server; });
 

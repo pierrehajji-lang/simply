@@ -1,5 +1,5 @@
 'use strict';
-/* Simply — fondations : petits outils, état, sauvegarde, annuler/rétablir, menus et fenêtres. */
+/* Zoubiders — fondations : petits outils, état, sauvegarde, annuler/rétablir, menus et fenêtres. */
 
 // ---------- Petits outils ----------
 const $ = (s, el = document) => el.querySelector(s);
@@ -103,7 +103,7 @@ function flush() {
   // Les envois sont mis en file : jamais un ancien état n'écrase un plus récent.
   saving = saving.then(() => fetch('/api/data', { method: 'PUT', body })
     .then(r => { if (r.status === 401) return location.reload(); if (!r.ok) throw 0; if (!saveTimer) setStatus('✓ Enregistré'); })
-    .catch(() => setStatus('⚠ Échec de l’enregistrement — Simply est-il toujours lancé ?', true)));
+    .catch(() => setStatus('⚠ Échec de l’enregistrement — Zoubiders est-il toujours lancé ?', true)));
 }
 // shortcut: sendBeacon est limité à ~64 Ko ; au-delà, seules les dernières 350 ms de frappe peuvent être perdues à la fermeture.
 addEventListener('beforeunload', () => { if (saveTimer) window.SIMPLY_STATIC ? flush() : navigator.sendBeacon('/api/data', JSON.stringify(S)); });

@@ -1,5 +1,5 @@
 'use strict';
-/* Simply — l'application : navigation, barre latérale, pages, fiches, modèles, recherche, corbeille, réglages, import. */
+/* Zoubiders — l'application : navigation, barre latérale, pages, fiches, modèles, recherche, corbeille, réglages, import. */
 
 // ---------- Pages ----------
 const page = id => S.pages.find(p => p.id === id);
@@ -64,7 +64,7 @@ function renderMain() {
   }
   const p = page(nav.page);
   if (!p || p.trashed) {
-    document.title = 'Simply';
+    document.title = 'Zoubiders';
     main.append(h('div', { class: 'empty' }, h('p', {}, 'Aucune page ouverte.'), h('button', { class: 'btn primary', onclick: () => newPage() }, 'Créer une page')));
     return;
   }
@@ -295,7 +295,7 @@ function enterFromTitle(doc, key) {
 }
 
 function renderPageView(p) {
-  document.title = (p.title || 'Sans titre') + ' — Simply';
+  document.title = (p.title || 'Sans titre') + ' — Zoubiders';
   const chain = [];
   for (let a = p; a; a = a.parentId ? page(a.parentId) : null) chain.unshift({ label: `${a.icon || ''} ${a.title || 'Sans titre'}`, go: (id => () => openPage(id))(a.id) });
   const fav = (S.favorites || []).includes(p.id);
@@ -323,7 +323,7 @@ function renderPageView(p) {
 // ---------- Rendu d'une fiche (ligne de base de données) ----------
 function renderRowView({ db, b, host, row }) {
   const tc = titleCol(db);
-  document.title = (rowTitle(db, row) || 'Sans titre') + ' — Simply';
+  document.title = (rowTitle(db, row) || 'Sans titre') + ' — Zoubiders';
   const chain = [];
   for (let a = host; a; a = a.parentId ? page(a.parentId) : null) chain.unshift({ label: `${a.icon || ''} ${a.title || 'Sans titre'}`, go: (id => () => openPage(id))(a.id) });
   if (!host.isDb) chain.push({ label: '🗂️ ' + (db.title || 'Base'), go: () => openPage(host.id) });
@@ -958,15 +958,15 @@ function openSettings() {
     h('button', { class: 'mi', onclick: async () => { close(); const f = await pickFile('.json'); if (f) try { importNotion(JSON.parse(await f.text())); } catch { toast('Fichier illisible'); } } }, h('span', { class: 'mi-ic' }, '{ }'), 'Importer un fichier d’export Notion (.json)'),
     h('button', { class: 'mi', onclick: () => { close(); importMarkdown(); } }, h('span', { class: 'mi-ic' }, 'M↓'), 'Importer des pages Markdown (.md)'),
     h('div', { class: 'mh' }, 'Sauvegardes'),
-    h('button', { class: 'mi', onclick: () => download('simply-sauvegarde-' + today() + '.json', JSON.stringify(S), 'application/json') }, h('span', { class: 'mi-ic' }, '⬇'), 'Télécharger une sauvegarde complète'),
+    h('button', { class: 'mi', onclick: () => download('zoubiders-sauvegarde-' + today() + '.json', JSON.stringify(S), 'application/json') }, h('span', { class: 'mi-ic' }, '⬇'), 'Télécharger une sauvegarde complète'),
     h('button', { class: 'mi', onclick: async () => {
       const f = await pickFile('.json'); if (!f) return;
       let d; try { d = JSON.parse(await f.text()); } catch { return toast('Fichier illisible'); }
-      if (!d || !Array.isArray(d.pages)) return toast('Ce fichier n’est pas une sauvegarde Simply.');
+      if (!d || !Array.isArray(d.pages)) return toast('Ce fichier n’est pas une sauvegarde Zoubiders.');
       if (!await dialog({ title: 'Restaurer cette sauvegarde ?', text: `Tout le contenu actuel sera remplacé par la sauvegarde (${d.pages.length} pages). ⌘Z permet d’annuler.`, ok: 'Restaurer', danger: true })) return;
       S = d; migrate(); save(); close(); applyTheme(); openPage(S.lastPage);
     } }, h('span', { class: 'mi-ic' }, '⬆'), 'Restaurer une sauvegarde…'),
-    window.SIMPLY_STATIC ? null : h('p', { class: 'muted small' }, 'Vos données sont dans le dossier « donnees » de Simply. Une copie de secours est faite à chaque lancement.'),
+    window.SIMPLY_STATIC ? null : h('p', { class: 'muted small' }, 'Vos données sont dans le dossier « donnees » de Zoubiders. Une copie de secours est faite à chaque lancement.'),
     h('div', { class: 'mh' }, 'Raccourcis'),
     h('div', { class: 'keys' }, [['⌘K', 'Rechercher'], ['⌘Z / ⇧⌘Z', 'Annuler / rétablir'], ['/', 'Insérer un bloc'], ['⌘B ⌘I ⌘U', 'Gras, italique, souligné'], ['⌘E', 'Code'], ['⌘K (texte sélectionné)', 'Lien'], ['Tab / ⇧Tab', 'Décaler un bloc'], ['⌘\\', 'Masquer la barre latérale'], ['⌘J', 'Assistant IA'], ['# - 1. [] > ---', 'Raccourcis d’écriture']].map(([k, l]) => h('div', {}, h('kbd', {}, k), ' ', l))));
   close = modal('Réglages', body, null, 'wide');
@@ -991,7 +991,7 @@ async function importNotionFromServer() {
   if (!r.ok) return toast('Aucun export Notion trouvé dans le dossier « import ».');
   importNotion(await r.json());
 }
-// Transforme l'export Notion (pages, bases, fiches) en pages Simply, en gardant la même organisation.
+// Transforme l'export Notion (pages, bases, fiches) en pages Zoubiders, en gardant la même organisation.
 function importNotion(data) {
   if (!data || !Array.isArray(data.databases)) return toast('Ce fichier n’est pas un export Notion reconnu.');
   const TYPE = { title: 'title', text: 'text', rich_text: 'text', number: 'number', select: 'select', multi_select: 'multi', status: 'status', date: 'date', url: 'url', email: 'email', phone_number: 'phone', checkbox: 'checkbox', person: 'person', people: 'person', created_time: 'created', relation: 'relation' };
@@ -1085,9 +1085,9 @@ function reparentQuiet(pg, parent) {
 function seed() {
   S = { version: 2, theme: 'auto', pages: [], templates: [], favorites: [], lastPage: null };
   const b = (type, html = '', extra) => Object.assign(newBlock(type, html), extra || {});
-  const welcome = createPage(null, 'Bienvenue dans Simply', {
+  const welcome = createPage(null, 'Bienvenue dans Zoubiders', {
     icon: '👋', blocks: [
-      b('callout', 'Simply est votre espace personnel : pages, bases de données, modèles et schémas. Tout est enregistré automatiquement <b>sur cet ordinateur</b>, sans compte ni Internet.', { icon: '✨', color: 'bg-blue' }),
+      b('callout', 'Zoubiders est votre espace personnel : pages, bases de données, modèles et schémas. Tout est enregistré automatiquement <b>sur cet ordinateur</b>, sans compte ni Internet.', { icon: '✨', color: 'bg-blue' }),
       b('h2', 'Pour commencer'),
       b('todo', 'Tapez <b>/</b> au début d’une ligne pour insérer un titre, une liste, une image, un schéma, une base de données…'),
       b('todo', 'Sélectionnez du texte pour le mettre en <b>gras</b>, en <i>italique</i>, en <span class="tc-red">couleur</span> ou en faire un lien'),
@@ -1119,8 +1119,8 @@ function migrate() {
   // L'application s'appelait « Feuillet » : on met à jour la page d'accueil d'origine.
   S.pages.forEach(p => {
     if (p.title !== 'Bienvenue dans Feuillet') return;
-    p.title = 'Bienvenue dans Simply';
-    p.blocks.forEach(b => { if (b.html) setHtml(b, b.html.replace(/Feuillet/g, 'Simply')); });
+    p.title = 'Bienvenue dans Zoubiders';
+    p.blocks.forEach(b => { if (b.html) setHtml(b, b.html.replace(/Feuillet/g, 'Zoubiders')); });
   });
   S.templates.forEach(t => fixBlocks(t.blocks));
 }
@@ -1139,7 +1139,7 @@ async function boot() {
     S = await r.json();
   } catch {
     // Ne jamais repartir de zéro si les données n'ont pas pu être lues : on risquerait de les écraser.
-    document.body.innerHTML = '<div class="empty">⚠ Impossible de lire vos données. Vérifiez que Simply est bien lancé (fenêtre Terminal ouverte), puis rechargez la page.</div>';
+    document.body.innerHTML = '<div class="empty">⚠ Impossible de lire vos données. Vérifiez que Zoubiders est bien lancé (fenêtre Terminal ouverte), puis rechargez la page.</div>';
     return;
   }
   if (!S) { seed(); save(); } else { migrate(); setStatus('✓ Enregistré'); }

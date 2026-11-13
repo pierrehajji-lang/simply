@@ -1,5 +1,5 @@
 'use strict';
-/* Simply — bloc « Schéma » : formes, textes et flèches à placer librement (cartes mentales, organigrammes, parcours…). */
+/* Zoubiders — bloc « Schéma » : formes, textes et flèches à placer librement (cartes mentales, organigrammes, parcours…). */
 
 const SHAPES = { rect: ['▭', 'Rectangle'], round: ['▢', 'Arrondi'], ellipse: ['◯', 'Rond'], diamond: ['◇', 'Losange'], note: ['🗒', 'Note'], text: ['T', 'Texte seul'] };
 function newDiagram() {

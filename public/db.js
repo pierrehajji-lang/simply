@@ -1,5 +1,5 @@
 'use strict';
-/* Simply — bases de données : colonnes typées, fiches (chaque ligne est une page), vues, filtres, tris, calculs, modèles, CSV. */
+/* Zoubiders — bases de données : colonnes typées, fiches (chaque ligne est une page), vues, filtres, tris, calculs, modèles, CSV. */
 
 const COLTYPES = {
   title: ['Titre', 'Aa'], text: ['Texte', '≡'], number: ['Nombre', '#'], select: ['Sélection', '▾'], status: ['Statut', '◔'],

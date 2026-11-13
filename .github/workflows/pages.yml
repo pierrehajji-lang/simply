@@ -1,5 +1,5 @@
 # Publie le dossier public/ sur GitHub Pages à chaque envoi sur la branche main.
-name: Site Simply
+name: Site Zoubiders
 on:
   push:
     branches: [main]

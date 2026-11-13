@@ -1,4 +1,4 @@
-// Simply : petit serveur local (seule dépendance : le kit officiel Claude, utilisé pour l'assistant IA). Sert l'interface, enregistre les données dans un fichier JSON
+// Zoubiders : petit serveur local (seule dépendance : le kit officiel Claude, utilisé pour l'assistant IA). Sert l'interface, enregistre les données dans un fichier JSON
 // et range les images ajoutées dans donnees/fichiers/.
 const http = require('http');
 const fs = require('fs');
@@ -27,7 +27,7 @@ const ACCOUNTS = path.join(DATA_DIR, 'comptes.json');
 const accounts = () => { try { return JSON.parse(fs.readFileSync(ACCOUNTS, 'utf8')); } catch { return []; } };
 const saveAccounts = list => fs.writeFileSync(ACCOUNTS, JSON.stringify(list, null, 2), { mode: 0o600 });
 const hashPw = (pw, salt) => crypto.scryptSync(String(pw), salt, 64).toString('hex');
-const sessions = new Map(); // jeton de connexion -> id du compte (oublié quand Simply s'arrête)
+const sessions = new Map(); // jeton de connexion -> id du compte (oublié quand Zoubiders s'arrête)
 function currentUser(req) {
   const tok = (req.headers.cookie || '').match(/(?:^|;\s*)simply_session=([a-f0-9]+)/)?.[1];
   const id = tok && sessions.get(tok);
@@ -53,7 +53,7 @@ function login(res, user) {
 }
 
 // ---------- Accès depuis le Wi-Fi ----------
-// Simply écoute sur le réseau, mais n'accepte un autre appareil que si l'accès Wi-Fi est activé ET que des comptes existent.
+// Zoubiders écoute sur le réseau, mais n'accepte un autre appareil que si l'accès Wi-Fi est activé ET que des comptes existent.
 const NET = path.join(DATA_DIR, 'reseau.json');
 const netConf = () => { try { return JSON.parse(fs.readFileSync(NET, 'utf8')); } catch { return {}; } };
 const wifiOn = () => !!netConf().wifi;
@@ -77,7 +77,7 @@ function failed(ip) {
   if (++f.n >= 5) { f.n = 0; f.until = Date.now() + 15 * 60e3; }
   failures.set(ip, f);
 }
-// Adresse publique du tunnel, écrite par « Ouvrir Simply sur Internet.command » tant qu'il tourne.
+// Adresse publique du tunnel, écrite par « Ouvrir Zoubiders sur Internet.command » tant qu'il tourne.
 const internetUrl = () => { try { return fs.readFileSync(path.join(DATA_DIR, 'lien-internet.txt'), 'utf8').trim() || null; } catch { return null; } };
 const lanUrls = () => Object.values(os.networkInterfaces()).flat().filter(i => i && i.family === 'IPv4' && !i.internal).map(i => `http://${i.address}:${PORT}`);
 
@@ -90,7 +90,7 @@ const aiConf = () => { try { return JSON.parse(fs.readFileSync(AI_CONF, 'utf8'))
 const sendJson = (res, code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(obj)); };
 
 async function askClaude(conf, system, messages, effort) {
-  if (!Anthropic) throw new Error('Le kit Claude n’est pas installé (lancez « npm install » dans le dossier de Simply).');
+  if (!Anthropic) throw new Error('Le kit Claude n’est pas installé (lancez « npm install » dans le dossier de Zoubiders).');
   const client = new Anthropic(conf.apiKey ? { apiKey: conf.apiKey } : {});
   try {
     const r = await client.beta.messages.create({
@@ -149,7 +149,7 @@ const server = http.createServer((req, res) => {
   // Depuis Internet (tunnel) : seulement si les comptes sont activés. Depuis le Wi-Fi : en plus, l'accès Wi-Fi doit être ouvert.
   if (!isLocal(req) && !(accounts().length && (viaTunnel(req) || wifiOn()))) {
     res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
-    return res.end(viaTunnel(req) ? 'Simply n’est pas encore prêt : son propriétaire doit activer les comptes.' : 'Simply n’est pas ouvert au Wi-Fi. Sur le Mac de Simply : Réglages › Accès depuis le Wi-Fi.');
+    return res.end(viaTunnel(req) ? 'Zoubiders n’est pas encore prêt : son propriétaire doit activer les comptes.' : 'Zoubiders n’est pas ouvert au Wi-Fi. Sur le Mac de Zoubiders : Réglages › Accès depuis le Wi-Fi.');
   }
   if (url === '/api/network' && req.method === 'GET') {
     if (!isLocal(req) && !currentUser(req)) return sendJson(res, 401, { error: 'Connexion requise' });
@@ -159,7 +159,7 @@ const server = http.createServer((req, res) => {
   if (url === '/api/network' && req.method === 'PUT') {
     return readJson(req, res, 1024, b => {
       // Seulement depuis le Mac lui-même, et par l'administrateur une fois les comptes activés.
-      if (!isLocal(req)) return sendJson(res, 403, { error: 'À régler depuis le Mac de Simply.' });
+      if (!isLocal(req)) return sendJson(res, 403, { error: 'À régler depuis le Mac de Zoubiders.' });
       if (b.wifi === true && !accounts().length) return sendJson(res, 400, { error: 'Activez d’abord les comptes : sinon n’importe qui sur le Wi-Fi verrait vos pages.' });
       if (accounts().length && !currentUser(req)?.admin) return sendJson(res, 403, { error: 'Réservé à l’administrateur.' });
       const c = netConf();
@@ -339,7 +339,7 @@ const openBrowser = () => { if (!process.env.NO_OPEN) exec(`open ${URL}`); };
 
 server.on('error', e => {
   if (e.code === 'EADDRINUSE') {
-    console.log(`Simply tourne déjà : ouverture de ${URL}`);
+    console.log(`Zoubiders tourne déjà : ouverture de ${URL}`);
     openBrowser();
     process.exit(0);
   }
@@ -349,6 +349,6 @@ server.on('error', e => {
 // 127.0.0.1 : l'app n'est accessible que depuis cet ordinateur.
 // 0.0.0.0 : joignable depuis le Wi-Fi, mais les autres appareils sont refusés tant que l'accès n'est pas activé (voir plus haut).
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`\n  Simply est lancé : ${URL}\n  Vos données : ${DATA}\n  Accès Wi-Fi : ${wifiOn() && accounts().length ? 'ouvert → ' + lanUrls().join(' ou ') : 'fermé (Réglages › Accès depuis le Wi-Fi)'}\n  Laissez cette fenêtre ouverte. Pour arrêter : Ctrl + C\n`);
+  console.log(`\n  Zoubiders est lancé : ${URL}\n  Vos données : ${DATA}\n  Accès Wi-Fi : ${wifiOn() && accounts().length ? 'ouvert → ' + lanUrls().join(' ou ') : 'fermé (Réglages › Accès depuis le Wi-Fi)'}\n  Laissez cette fenêtre ouverte. Pour arrêter : Ctrl + C\n`);
   openBrowser();
 });

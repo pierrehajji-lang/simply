@@ -1,5 +1,5 @@
 'use strict';
-/* Simply — l'éditeur par blocs : texte enrichi, listes, blocs dépliables, encadrés, images, tableaux, schémas… */
+/* Zoubiders — l'éditeur par blocs : texte enrichi, listes, blocs dépliables, encadrés, images, tableaux, schémas… */
 
 const TEXT = new Set(['p', 'h1', 'h2', 'h3', 'bullet', 'number', 'todo', 'toggle', 'quote', 'callout', 'code']);
 const LIST = new Set(['bullet', 'number', 'todo', 'toggle']);
